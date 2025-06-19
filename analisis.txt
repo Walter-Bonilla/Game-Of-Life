@@ -1,0 +1,21 @@
+
+## Análisis y Discusión
+
+1. **Complejidad**: La implementación actual tiene complejidad O(n²) para cada generación, donde n es el tamaño del tablero (n×n celdas). Esto se debe a que debemos visitar cada celda y comprobar sus 8 vecinos.
+
+2. **Rendimiento**: En las pruebas empíricas, se observa que el tiempo de ejecución crece cuadráticamente con el tamaño del tablero, como se esperaba. La gráfica log-log muestra una pendiente de aproximadamente 2, confirmando la complejidad cuadrática.
+
+3. **Cuellos de botella**:
+   - El cálculo de vecinos es el principal cuello de botella
+   - La creación de un nuevo tablero en cada paso consume memoria
+   - No se aprovechan patrones estáticos o repetitivos
+
+4. **Optimizaciones posibles**:
+   - **Vectorización**: Usar operaciones de NumPy para calcular vecinos sin bucles
+   - **Paralelización**: Dividir el tablero en regiones para procesamiento paralelo
+   - **Estructuras alternativas**: Usar listas de celdas vivas en lugar de matrices densas
+   - **Memoización**: Almacenar resultados de cálculos repetidos
+
+5. **Comportamientos emergentes**: La implementación correctamente reproduce los patrones clásicos como planeadores, parpadeadores y estructuras estáticas, validando la corrección de las reglas implementadas.
+
+Esta implementación sirve como base para explorar tanto los conceptos teóricos del Juego de la Vida como las técnicas de optimización para sistemas basados en autómatas celulares.
