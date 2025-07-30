@@ -1,0 +1,73 @@
+Timer unit: 0.001 s
+
+Total time: 8.75958 s
+File: C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py
+Function: count_neighbors at line 31
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    31                                               def count_neighbors(self, x: int, y: int) -> int:
+    32                                                   """
+    33                                                   Cuenta el número de vecinos vivos para una celda dada.
+    34                                                   
+    35                                                   Args:
+    36                                                       x: Coordenada x (fila) de la celda.
+    37                                                       y: Coordenada y (columna) de la celda.
+    38                                                       
+    39                                                   Returns:
+    40                                                       Número de vecinos vivos (0-8).
+    41                                                   """
+    42    163840        176.3      0.0      2.0          neighbors = 0
+    43    655360        640.0      0.0      7.3          for i in [-1, 0, 1]:
+    44   1966080       1963.8      0.0     22.4              for j in [-1, 0, 1]:
+    45   1474560       1211.0      0.0     13.8                  if i == 0 and j == 0:
+    46    163840        144.7      0.0      1.7                      continue  # Saltar la celda actual
+    47                                                           # Usar condiciones periódicas (toroidal)
+    48   1310720       1991.3      0.0     22.7                  nx, ny = (x + i) % self.rows, (y + j) % self.cols
+    49   1310720       2511.5      0.0     28.7                  neighbors += self.board[nx, ny]
+    50    163840        121.0      0.0      1.4          return neighbors
+
+Total time: 15.6666 s
+File: C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py
+Function: step at line 52
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    52                                               def step(self) -> None:
+    53                                                   """
+    54                                                   Actualiza el tablero según las reglas del Juego de la Vida.
+    55                                                   """
+    56        10          0.3      0.0      0.0          new_board = np.zeros((self.rows, self.cols), dtype=int)
+    57                                                   
+    58      1290          0.9      0.0      0.0          for i in range(self.rows):
+    59    165120        268.2      0.0      1.7              for j in range(self.cols):
+    60    163840      14610.6      0.1     93.3                  neighbors = self.count_neighbors(i, j)
+    61                                                           
+    62                                                           # Aplicar reglas del Juego de la Vida
+    63    163840        469.6      0.0      3.0                  if self.board[i, j] == 1:  # Celda viva
+    64     28739         38.0      0.0      0.2                      if neighbors < 2 or neighbors > 3:
+    65     13452         54.6      0.0      0.3                          new_board[i, j] = 0  # Muere por soledad o superpoblación
+    66                                                               else:
+    67     15287         49.7      0.0      0.3                          new_board[i, j] = 1  # Sobrevive
+    68                                                           else:  # Celda muerta
+    69    135101        134.8      0.0      0.9                      if neighbors == 3:
+    70     12779         39.9      0.0      0.3                          new_board[i, j] = 1  # Nace por reproducción
+    71                                                   
+    72        10          0.1      0.0      0.0          self.board = new_board
+
+Total time: 16.2924 s
+File: C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py
+Function: run at line 74
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    74                                               def run(self, steps: int) -> None:
+    75                                                   """
+    76                                                   Ejecuta múltiples pasos del juego.
+    77                                                   
+    78                                                   Args:
+    79                                                       steps: Número de pasos a ejecutar.
+    80                                                   """
+    81        11          0.0      0.0      0.0          for _ in range(steps):
+    82        10      16292.4   1629.2    100.0              self.step()
+

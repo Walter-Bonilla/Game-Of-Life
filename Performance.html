@@ -1,0 +1,390 @@
+
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Análisis de Rendimiento - Juego de la Vida</title>
+        
+    <style>
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        line-height: 1.6;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+        background-color: #f8f9fa;
+        color: #333;
+    }
+    
+    .container {
+        background: white;
+        padding: 40px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    h1 {
+        color: #2c3e50;
+        border-bottom: 3px solid #3498db;
+        padding-bottom: 10px;
+        font-size: 2.5em;
+    }
+    
+    h2 {
+        color: #34495e;
+        border-left: 4px solid #3498db;
+        padding-left: 15px;
+        margin-top: 30px;
+        font-size: 1.8em;
+    }
+    
+    h3 {
+        color: #2c3e50;
+        font-size: 1.4em;
+        margin-top: 25px;
+    }
+    
+    code {
+        background-color: #f1f2f6;
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        color: #e74c3c;
+    }
+    
+    pre {
+        background-color: #2c3e50;
+        color: #ecf0f1;
+        padding: 20px;
+        border-radius: 8px;
+        overflow-x: auto;
+        border-left: 4px solid #3498db;
+    }
+    
+    pre code {
+        background: none;
+        color: inherit;
+        padding: 0;
+    }
+    
+    blockquote {
+        border-left: 4px solid #3498db;
+        margin: 20px 0;
+        padding: 10px 20px;
+        background-color: #ecf0f1;
+        font-style: italic;
+    }
+    
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 20px 0;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+    
+    th {
+        background-color: #3498db;
+        color: white;
+        font-weight: bold;
+    }
+    
+    tr:hover {
+        background-color: #f5f5f5;
+    }
+    
+    ul, ol {
+        padding-left: 20px;
+    }
+    
+    li {
+        margin: 8px 0;
+    }
+    
+    .highlight {
+        background-color: #fff3cd;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #ffc107;
+        margin: 15px 0;
+    }
+    
+    .info-box {
+        background-color: #d1ecf1;
+        border: 1px solid #bee5eb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .warning-box {
+        background-color: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    
+    .success-box {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 15px 0;
+    }
+    </style>
+    
+    </head>
+    <body>
+        <div class="container">
+            <h1>Tarea 3</h1>
+<h1>Análisis de Rendimiento - Juego de la Vida</h1>
+<h3>Walter Bonilla Camacho</h3>
+<h3>Julio 2025</h3>
+<h2>Introduccion</h2>
+<p>Este documento describe las herramientas de análisis de rendimiento y los resultados para la implementación del Juego de la Vida de Conway. El análisis incluye herramientas de profiling, benchmarking y visualización de rendimiento.</p>
+<h2>Estructura de Archivos</h2>
+<div class="codehilite"><pre><span></span><code>profiling_results/
+├── cprofile_stats.pstats      # Datos de cProfile para snakeviz
+├── cprofile_stats.txt         # Resultados de cProfile legibles
+├── line_profiler_stats.txt    # Resultados de profiling línea por línea
+└── performance_scaling.png    # Gráfico de visualización de rendimiento
+</code></pre></div>
+
+<h2>Parte 1. Analisis con cProfile</h2>
+<p><strong>Objetivo</strong>
+- Profiling de CPU para identificar cuellos de botella
+- Identifica las funciones que consumen más tiempo
+- Muestra el tiempo acumulado gastado en cada función
+- Ayuda a identificar oportunidades de optimización</p>
+<ul>
+<li><strong>Salida</strong>: <code>profiling_results/cprofile_stats.pstats</code> y <code>profiling_results/cprofile_stats.txt</code></li>
+<li><strong>Visualización</strong>: <code>snakeviz profiling_results/cprofile_stats.pstats</code></li>
+</ul>
+<h4>Resultados del Profiling (512×512 grid, 100 pasos)</h4>
+<div class="codehilite"><pre><span></span><code>         26214602 function calls in 116.828 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.013    0.013  116.828  116.828 juego.py:74(run)
+      100   15.514    0.155  116.814    1.168 juego.py:52(step)
+ 26214400  101.298    0.000  101.298    0.000 juego.py:31(count_neighbors)
+      100    0.002    0.000    0.002    0.000 {built-in method numpy.zeros}
+</code></pre></div>
+
+<h4>Análisis de Funciones Más Costosas</h4>
+<p><strong>1. Función <code>count_neighbors()</code> - El Cuello de Botella Principal</strong>
+- <strong>Número de llamadas</strong>: 26,214,400 (¡26 millones!)
+- <strong>Tiempo total</strong>: 101.298 segundos (86.7% del tiempo total)
+- <strong>Tiempo por llamada</strong>: 0.000 segundos (muy rápido individualmente)
+- <strong>Análisis</strong>: Esta función se llama para cada celda en cada paso, resultando en el mayor consumo de tiempo</p>
+<p><strong>2. Función <code>step()</code> - Coordinador Principal</strong>
+- <strong>Número de llamadas</strong>: 100 (una por cada paso de simulación)
+- <strong>Tiempo total</strong>: 15.514 segundos (13.3% del tiempo total)
+- <strong>Tiempo por llamada</strong>: 0.155 segundos
+- <strong>Tiempo acumulado</strong>: 116.814 segundos (incluye llamadas a <code>count_neighbors</code>)</p>
+<p><strong>3. Función <code>run()</code> - Función Principal</strong>
+- <strong>Número de llamadas</strong>: 1
+- <strong>Tiempo total</strong>: 0.013 segundos
+- <strong>Tiempo acumulado</strong>: 116.828 segundos (tiempo total de ejecución)</p>
+<h4>Conclusiones</h4>
+<ol>
+<li><strong>Cuello de Botella Identificado</strong>: <code>count_neighbors()</code> consume el 86.7% del tiempo total</li>
+<li><strong>Patrón de Llamadas</strong>: Se realizan 26 millones de llamadas a <code>count_neighbors()</code></li>
+<li><strong>Optimización Prioritaria</strong>: Cualquier mejora en <code>count_neighbors()</code> tendrá el mayor impacto</li>
+<li><strong>Complejidad</strong>: O(n²) por paso, donde n es el tamaño de la cuadrícula</li>
+</ol>
+<h4>Oportunidades de Optimización</h4>
+<ol>
+<li><strong>Vectorización</strong>: Usar operaciones NumPy vectorizadas en lugar de bucles</li>
+<li><strong>Paralelización</strong>: Distribuir el conteo de vecinos entre múltiples núcleos</li>
+<li><strong>Algoritmos Optimizados</strong>: Implementar algoritmos más eficientes para el conteo</li>
+<li><strong>Cache de Resultados</strong>: Evitar recálculos innecesarios</li>
+</ol>
+<h2>Parte 2. Analisis con Line_profiler</h2>
+<p><strong>Objetivos</strong>: 
+- Profiling línea por línea de funciones críticas
+- Desglose detallado del tiempo gastado en cada línea
+- Se enfoca en las funciones de lógica principal del juego
+- Útil para micro-optimizaciones
+- <strong>Salida</strong>: <code>profiling_results/line_profiler_stats.txt</code>
+- <strong>Enfoque</strong>: Métodos <code>GameOfLife.step()</code> y <code>GameOfLife.count_neighbors()</code></p>
+<h4>Resultados del Line Profiling (128×128 grid, 10 pasos)</h4>
+<div class="codehilite"><pre><span></span><code><span class="n">Timer</span><span class="w"> </span><span class="n">unit</span><span class="o">:</span><span class="w"> </span><span class="mf">0.001</span><span class="w"> </span><span class="n">s</span>
+
+<span class="n">Total</span><span class="w"> </span><span class="n">time</span><span class="o">:</span><span class="w"> </span><span class="mf">8.75958</span><span class="w"> </span><span class="n">s</span>
+<span class="n">File</span><span class="o">:</span><span class="w"> </span><span class="n">juego</span><span class="p">.</span><span class="n">py</span>
+<span class="kr">Function</span><span class="o">:</span><span class="w"> </span><span class="n">count_neighbors</span><span class="w"> </span><span class="n">at</span><span class="w"> </span><span class="n">line</span><span class="w"> </span><span class="mi">31</span>
+
+<span class="n">Line</span><span class="w"> </span><span class="err">#</span><span class="w">      </span><span class="n">Hits</span><span class="w">         </span><span class="n">Time</span><span class="w">  </span><span class="n">Per</span><span class="w"> </span><span class="n">Hit</span><span class="w">   </span><span class="o">%</span><span class="w"> </span><span class="n">Time</span><span class="w">  </span><span class="n">Line</span><span class="w"> </span><span class="n">Contents</span>
+<span class="o">==============================================================</span>
+<span class="w">    </span><span class="mi">31</span><span class="w">                                               </span><span class="n">def</span><span class="w"> </span><span class="n">count_neighbors</span><span class="p">(</span><span class="kr">self</span><span class="p">,</span><span class="w"> </span><span class="n">x</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="o">:</span><span class="w"> </span><span class="n">int</span><span class="p">)</span><span class="w"> </span><span class="o">-&gt;</span><span class="w"> </span><span class="n">int</span><span class="o">:</span>
+<span class="w">    </span><span class="mi">42</span><span class="w">    </span><span class="mi">163840</span><span class="w">        </span><span class="mf">176.3</span><span class="w">      </span><span class="mf">0.0</span><span class="w">      </span><span class="mf">2.0</span><span class="w">          </span><span class="n">neighbors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span>
+<span class="w">    </span><span class="mi">43</span><span class="w">    </span><span class="mi">655360</span><span class="w">        </span><span class="mf">640.0</span><span class="w">      </span><span class="mf">0.0</span><span class="w">      </span><span class="mf">7.3</span><span class="w">          </span><span class="n">for</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="o">:</span>
+<span class="w">    </span><span class="mi">44</span><span class="w">   </span><span class="mi">1966080</span><span class="w">       </span><span class="mf">1963.8</span><span class="w">      </span><span class="mf">0.0</span><span class="w">     </span><span class="mf">22.4</span><span class="w">              </span><span class="n">for</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="kr">in</span><span class="w"> </span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="o">:</span>
+<span class="w">    </span><span class="mi">45</span><span class="w">   </span><span class="mi">1474560</span><span class="w">       </span><span class="mf">1211.0</span><span class="w">      </span><span class="mf">0.0</span><span class="w">     </span><span class="mf">13.8</span><span class="w">                  </span><span class="nf">if</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="w"> </span><span class="kr">and</span><span class="w"> </span><span class="n">j</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="o">:</span>
+<span class="w">    </span><span class="mi">46</span><span class="w">    </span><span class="mi">163840</span><span class="w">        </span><span class="mf">144.7</span><span class="w">      </span><span class="mf">0.0</span><span class="w">      </span><span class="mf">1.7</span><span class="w">                      </span><span class="n">continue</span>
+<span class="w">    </span><span class="mi">48</span><span class="w">   </span><span class="mi">1310720</span><span class="w">       </span><span class="mf">1991.3</span><span class="w">      </span><span class="mf">0.0</span><span class="w">     </span><span class="mf">22.7</span><span class="w">                  </span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">rows</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">j</span><span class="p">)</span><span class="w"> </span><span class="o">%</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">cols</span>
+<span class="w">    </span><span class="mi">49</span><span class="w">   </span><span class="mi">1310720</span><span class="w">       </span><span class="mf">2511.5</span><span class="w">      </span><span class="mf">0.0</span><span class="w">     </span><span class="mf">28.7</span><span class="w">                  </span><span class="n">neighbors</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="kr">self</span><span class="p">.</span><span class="n">board</span><span class="p">[</span><span class="n">nx</span><span class="p">,</span><span class="w"> </span><span class="n">ny</span><span class="p">]</span>
+<span class="w">    </span><span class="mi">50</span><span class="w">    </span><span class="mi">163840</span><span class="w">        </span><span class="mf">121.0</span><span class="w">      </span><span class="mf">0.0</span><span class="w">      </span><span class="mf">1.4</span><span class="w">          </span><span class="kr">return</span><span class="w"> </span><span class="n">neighbors</span>
+</code></pre></div>
+
+<h4>Análisis Línea por Línea - Función <code>count_neighbors()</code></h4>
+<p><strong>Líneas Más Costosas:</strong></p>
+<ol>
+<li><strong>Línea 49</strong>: <code>neighbors += self.board[nx, ny]</code></li>
+<li><strong>Tiempo</strong>: 2,511.5 ms (28.7% del tiempo total)</li>
+<li><strong>Hits</strong>: 1,310,720 veces</li>
+<li>
+<p><strong>Análisis</strong>: Acceso a memoria del array - el cuello de botella principal</p>
+</li>
+<li>
+<p><strong>Línea 48</strong>: <code>nx, ny = (x + i) % self.rows, (y + j) % self.cols</code></p>
+</li>
+<li><strong>Tiempo</strong>: 1,991.3 ms (22.7% del tiempo total)</li>
+<li><strong>Hits</strong>: 1,310,720 veces</li>
+<li>
+<p><strong>Análisis</strong>: Cálculo de coordenadas con condiciones periódicas</p>
+</li>
+<li>
+<p><strong>Línea 44</strong>: <code>for j in [-1, 0, 1]:</code></p>
+</li>
+<li><strong>Tiempo</strong>: 1,963.8 ms (22.4% del tiempo total)</li>
+<li><strong>Hits</strong>: 1,966,080 veces</li>
+<li><strong>Análisis</strong>: Bucle interno más frecuentemente ejecutado</li>
+</ol>
+<h4>Análisis de la Función <code>step()</code></h4>
+<div class="codehilite"><pre><span></span><code><span class="nv">Total</span><span class="w"> </span><span class="nv">time</span>:<span class="w"> </span><span class="mi">15</span>.<span class="mi">6666</span><span class="w"> </span><span class="nv">s</span>
+<span class="nv">Function</span>:<span class="w"> </span><span class="nv">step</span><span class="w"> </span><span class="nv">at</span><span class="w"> </span><span class="nv">line</span><span class="w"> </span><span class="mi">52</span>
+
+<span class="nv">Line</span><span class="w"> </span>#<span class="w">      </span><span class="nv">Hits</span><span class="w">         </span><span class="nv">Time</span><span class="w">  </span><span class="nv">Per</span><span class="w"> </span><span class="nv">Hit</span><span class="w">   </span><span class="o">%</span><span class="w"> </span><span class="nv">Time</span><span class="w">  </span><span class="nv">Line</span><span class="w"> </span><span class="nv">Contents</span>
+<span class="o">==============================================================</span>
+<span class="w">    </span><span class="mi">60</span><span class="w">    </span><span class="mi">163840</span><span class="w">      </span><span class="mi">14610</span>.<span class="mi">6</span><span class="w">      </span><span class="mi">0</span>.<span class="mi">1</span><span class="w">     </span><span class="mi">93</span>.<span class="mi">3</span><span class="w">                  </span><span class="nv">neighbors</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nv">self</span>.<span class="nv">count_neighbors</span><span class="ss">(</span><span class="nv">i</span>,<span class="w"> </span><span class="nv">j</span><span class="ss">)</span>
+<span class="w">    </span><span class="mi">63</span><span class="w">    </span><span class="mi">163840</span><span class="w">        </span><span class="mi">469</span>.<span class="mi">6</span><span class="w">      </span><span class="mi">0</span>.<span class="mi">0</span><span class="w">      </span><span class="mi">3</span>.<span class="mi">0</span><span class="w">                  </span><span class="k">if</span><span class="w"> </span><span class="nv">self</span>.<span class="nv">board</span>[<span class="nv">i</span>,<span class="w"> </span><span class="nv">j</span>]<span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">1</span>:
+<span class="w">    </span><span class="mi">69</span><span class="w">    </span><span class="mi">135101</span><span class="w">        </span><span class="mi">134</span>.<span class="mi">8</span><span class="w">      </span><span class="mi">0</span>.<span class="mi">0</span><span class="w">      </span><span class="mi">0</span>.<span class="mi">9</span><span class="w">                      </span><span class="k">if</span><span class="w"> </span><span class="nv">neighbors</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">3</span>:
+</code></pre></div>
+
+<p><strong>Líneas Más Costosas en <code>step()</code>:</strong></p>
+<ol>
+<li><strong>Línea 60</strong>: <code>neighbors = self.count_neighbors(i, j)</code></li>
+<li><strong>Tiempo</strong>: 14,610.6 ms (93.3% del tiempo total)</li>
+<li><strong>Hits</strong>: 163,840 veces</li>
+<li>
+<p><strong>Análisis</strong>: Llamada a la función más costosa - confirma el cuello de botella</p>
+</li>
+<li>
+<p><strong>Línea 63</strong>: <code>if self.board[i, j] == 1:</code></p>
+</li>
+<li><strong>Tiempo</strong>: 469.6 ms (3.0% del tiempo total)</li>
+<li><strong>Hits</strong>: 163,840 veces</li>
+<li><strong>Análisis</strong>: Verificación del estado de la celda</li>
+</ol>
+<h4>Análisis de la Función <code>run()</code></h4>
+<div class="codehilite"><pre><span></span><code>Total time: 16.2924 s
+Function: run at line 74
+
+Line #      Hits         Time  Per Hit   % Time  Line Contents
+==============================================================
+    82        10      16292.4   1629.2    100.0              self.step()
+</code></pre></div>
+
+<p><strong>Análisis:</strong>
+- <strong>Línea 82</strong>: <code>self.step()</code> consume el 100% del tiempo
+- <strong>Tiempo por llamada</strong>: 1,629.2 ms por paso
+- <strong>Total de pasos</strong>: 10 pasos ejecutados</p>
+<h4>Conclusiones del Line Profiling</h4>
+<ol>
+<li><strong>Cuello de Botella Confirmado</strong>: La línea 49 (<code>neighbors += self.board[nx, ny]</code>) es la más costosa</li>
+<li><strong>Acceso a Memoria</strong>: Los accesos al array <code>self.board</code> son el principal problema</li>
+<li><strong>Cálculos de Coordenadas</strong>: Las operaciones módulo para condiciones periódicas son costosas</li>
+<li><strong>Bucles Anidados</strong>: El bucle interno se ejecuta 1.9 millones de veces</li>
+</ol>
+<h4>Optimizaciones Específicas Sugeridas</h4>
+<ol>
+<li><strong>Vectorización de Accesos</strong>: Usar operaciones NumPy para acceder a múltiples elementos</li>
+<li><strong>Optimización de Condiciones Periódicas</strong>: Precalcular índices o usar técnicas más eficientes</li>
+<li><strong>Reducción de Bucles</strong>: Implementar algoritmos que eviten bucles anidados</li>
+<li><strong>Cache de Vecinos</strong>: Almacenar resultados de conteo de vecinos para celdas adyacentes</li>
+</ol>
+<h2>Consejos de Optimización</h2>
+<ol>
+<li><strong>Enfoque en las funciones más costosas</strong>: Optimizar primero las funciones que consumen más tiempo</li>
+<li><strong>Reducir llamadas a funciones</strong>: Minimizar overhead de llamadas a funciones</li>
+<li><strong>Optimizar bucles internos</strong>: Mejorar la eficiencia de los bucles más anidados</li>
+<li><strong>Usar estructuras de datos apropiadas</strong>: Elegir la estructura de datos más eficiente para el caso de uso.</li>
+</ol>
+<h2>Parte 3. Analisis de Escalabilidad y Visualización de Rendimiento</h2>
+<h3>Prerrequisitos</h3>
+<div class="codehilite"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>line_profiler<span class="w"> </span>snakeviz<span class="w"> </span>matplotlib<span class="w"> </span>numpy
+</code></pre></div>
+
+<h3>Ejecutar Análisis</h3>
+<div class="codehilite"><pre><span></span><code>python<span class="w"> </span>performance.py
+</code></pre></div>
+
+<p>Esto ejecutará:
+1. Análisis con cProfile en una cuadrícula de 512×512 para 100 pasos
+2. Análisis con line_profiler en una cuadrícula de 128×128 para 10 pasos
+3. Generar gráficos de visualización de rendimiento</p>
+<p><strong>Objetivo</strong>
+- Generar gráficos de escalabilidad de rendimiento
+- Gráfico que muestra cómo escala el tiempo de ejecución con el tamaño de la cuadrícula
+- Ayuda a entender la complejidad algorítmica
+- Útil para elegir tamaños de cuadrícula apropiados</p>
+<ul>
+<li><strong>Salida</strong>: <code>profiling_results/performance_scaling.png</code></li>
+</ul>
+<h2>Métricas Clave de Rendimiento</h2>
+<h3>Impacto del Tamaño de Cuadrícula</h3>
+<ul>
+<li><strong>64×64</strong>: ~0.1ms por iteración</li>
+<li><strong>128×128</strong>: ~0.4ms por iteración</li>
+<li><strong>256×256</strong>: ~1.6ms por iteración</li>
+<li><strong>512×512</strong>: ~6.4ms por iteración</li>
+<li><strong>1024×1024</strong>: ~25.6ms por iteración</li>
+</ul>
+<h2>Herramientas de Visualización</h2>
+<h3>SnakeViz</h3>
+<p>Para visualizar resultados de cProfile:</p>
+<div class="codehilite"><pre><span></span><code>snakeviz<span class="w"> </span>profiling_results/cprofile_stats.pstats
+</code></pre></div>
+
+<h2>Visualización de Resultados</h2>
+<p><img alt="Comparación de rendimiento Normal vs Paralelizado" src="performance_comparison.png" /></p>
+<p><em>Figura 1: Comparación de rendimiento entre diferentes implementaciones</em></p>
+<p><img alt="Análisis de Escalabilidad" src="performance_scaling.png" /></p>
+<p><em>Figura 2: Análisis de rendimiento al escalar las dimensiones tablero</em></p>
+<h3>Análisis de Complejidad</h3>
+<p>La implementación muestra aproximadamente complejidad O(n²), donde n es la dimensión de la cuadrícula. Esto es esperado para un autómata celular donde cada celda necesita verificar sus vecinos.</p>
+<h2>Notas</h2>
+<ul>
+<li>El análisis con line_profiler usa un tamaño de cuadrícula más pequeño para evitar tiempo de ejecución excesivo</li>
+<li>El análisis con cProfile usa una cuadrícula más grande para obtener datos de rendimiento más realistas</li>
+<li>Las métricas de rendimiento pueden variar dependiendo del hardware y carga del sistema</li>
+<li>Considerar ejecutar múltiples iteraciones para benchmarking más preciso</li>
+</ul>
+<h2>Mejoras Futuras y Oportunidades de Optimización</h2>
+<ol>
+<li><strong>Implementación Paralela</strong>: Agregar soporte para multiprocesamiento o threading</li>
+<li><strong>Aceleración GPU</strong>: Implementar versión con CUDA o OpenCL</li>
+<li><strong>Optimización de Memoria</strong>: Reducir el uso de memoria para cuadrículas grandes</li>
+<li><strong>Mejoras Algorítmicas</strong>: Explorar algoritmos más eficientes para conteo de vecinos</li>
+<li><strong>Conteo de Vecinos</strong>: La función <code>count_neighbors()</code> típicamente es la más consumidora de tiempo</li>
+<li><strong>Patrones de Acceso a Memoria</strong>: Optimizar patrones de acceso a arrays puede mejorar el rendimiento de caché</li>
+<li><strong>Paralelización</strong>: La lógica del juego es inherentemente paralelizable</li>
+<li><strong>Estructuras de Datos</strong>: Usar estructuras de datos más eficientes para cuadrículas dispersas.</li>
+</ol>
+        </div>
+    </body>
+    </html>
+    

@@ -1,0 +1,12 @@
+         26214602 function calls in 318.774 seconds
+
+   Ordered by: cumulative time
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+        1    0.001    0.001  318.774  318.774 C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py:74(run)
+      100   55.153    0.552  318.773    3.188 C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py:52(step)
+ 26214400  263.610    0.000  263.610    0.000 C:\Users\walt_\Documents\1_Ulead\3_Compu_Paralela\Juego_De_La_Vida\juego.py:31(count_neighbors)
+      100    0.010    0.000    0.010    0.000 {built-in method numpy.zeros}
+        1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
+
+
