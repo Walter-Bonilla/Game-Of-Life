@@ -238,9 +238,11 @@ snakeviz profiling_results/cprofile_stats.pstats
 
 *Figura 1: Comparación de rendimiento entre diferentes implementaciones*
 
-![Análisis de Escalabilidad](performance_scaling.png)
+![Análisis adicional de Speed UP vs Numero de Procesadores y Visualizacion de Escalamiento Debil ](performance_analysis.png)
 
 *Figura 2: Análisis de rendimiento al escalar las dimensiones tablero*
+*Speed Up: Compara el rendimiento real vs el ideal*
+*Escalamiento Débil: Evalúa la eficiencia cuando se distribuye la carga de trabajo por núcleo*
 
 ### Análisis de Complejidad
 La implementación muestra aproximadamente complejidad O(n²), donde n es la dimensión de la cuadrícula. Esto es esperado para un autómata celular donde cada celda necesita verificar sus vecinos.

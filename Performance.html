@@ -141,6 +141,48 @@
         padding: 15px;
         margin: 15px 0;
     }
+    
+    /* Estilos para imágenes - control de tamaño y responsividad */
+    img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        margin: 20px auto;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Control específico para imágenes de análisis de rendimiento */
+    img[src*="performance_analysis"] {
+        max-width: 90%;
+        max-height: 400px;
+        object-fit: contain;
+    }
+    
+    img[src*="performance_scaling"] {
+        max-width: 80%;
+        max-height: 350px;
+        object-fit: contain;
+    }
+    
+    img[src*="performance_comparison"] {
+        max-width: 85%;
+        max-height: 380px;
+        object-fit: contain;
+    }
+    
+    /* Responsive para pantallas pequeñas */
+    @media (max-width: 768px) {
+        img {
+            max-width: 95%;
+            margin: 15px auto;
+        }
+        
+        img[src*="performance_analysis"] {
+            max-width: 95%;
+            max-height: 300px;
+        }
+    }
     </style>
     
     </head>
@@ -362,8 +404,10 @@ Line #      Hits         Time  Per Hit   % Time  Line Contents
 <h2>Visualización de Resultados</h2>
 <p><img alt="Comparación de rendimiento Normal vs Paralelizado" src="performance_comparison.png" /></p>
 <p><em>Figura 1: Comparación de rendimiento entre diferentes implementaciones</em></p>
-<p><img alt="Análisis de Escalabilidad" src="performance_scaling.png" /></p>
-<p><em>Figura 2: Análisis de rendimiento al escalar las dimensiones tablero</em></p>
+<p><img alt="Análisis adicional de Speed UP vs Numero de Procesadores y Visualizacion de Escalamiento Debil " src="performance_analysis.png" /></p>
+<p><em>Figura 2: Análisis de rendimiento al escalar las dimensiones tablero</em>
+<em>Speed Up: Compara el rendimiento real vs el ideal</em>
+<em>Escalamiento Débil: Evalúa la eficiencia cuando se distribuye la carga de trabajo por núcleo</em></p>
 <h3>Análisis de Complejidad</h3>
 <p>La implementación muestra aproximadamente complejidad O(n²), donde n es la dimensión de la cuadrícula. Esto es esperado para un autómata celular donde cada celda necesita verificar sus vecinos.</p>
 <h2>Notas</h2>
